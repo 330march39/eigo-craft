@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eigo Craft</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F7F7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            flex-grow: 1;
+        }
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 24px;
+        }
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .sub-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #666666;
+            text-align: center;
+            margin-bottom: 0;
+        }
+        .info-button {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #E6F0FF;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid #C4DAFC;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+        .info-button:hover {
+            background-color: #D8E6FF;
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .info-button svg {
+            color: #5B86E5;
+            width: 20px;
+            height: 20px;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+        .japanese-sentence-section {
+            background-color: #f0f4f8;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px dashed #c4dafc;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #334155;
+            position: relative; /* For positioning difficulty selector */
+        }
+        .japanese-sentence-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Align items to the top for better text flow */
+            margin-bottom: 10px;
+        }
+        .japanese-sentence-header {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0;
+            flex-grow: 1;
+            text-align: left;
+            padding-right: 10px; /* Space between header and dropdown */
+        }
+        .japanese-sentence-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            min-height: 1.6em; /* Ensure some height even if content is loading */
+        }
+        .japanese-sentence-note {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: -5px;
+            margin-bottom: 10px;
+        }
+        .generate-japanese-button {
+            background-color: #7AA2E3;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            outline: none;
+            border: none;
+            box-shadow: 0 3px 8px rgba(122, 162, 227, 0.4);
+        }
+        .generate-japanese-button:hover {
+            background-color: #638DD6;
+            transform: translateY(-1px);
+        }
+        .generate-japanese-button:active {
+            transform: translateY(0);
+        }
+
+        .difficulty-selector-container {
+            flex-shrink: 0; /* Prevent it from shrinking */
+            margin-top: -5px; /* Adjust vertical alignment to match header */
+        }
+        .difficulty-selector {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background-color: #ffffff;
+            font-size: 0.9rem;
+            color: #475569;
+            cursor: pointer;
+        }
+        .difficulty-selector:focus {
+            outline: none;
+            border-color: #5B86E5;
+            box-shadow: 0 0 0 3px rgba(91, 134, 229, 0.2);
+        }
+
+
+        textarea {
+            width: 100%;
+            height: 220px;
+            padding: 15px;
+            border: 2px solid #D1DBE5;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            line-height: 1.5;
+        }
+        textarea:focus {
+            border-color: #5B86E5;
+            box-shadow: 0 0 0 4px rgba(91, 134, 229, 0.3);
+        }
+        button#gradeButton {
+            background: linear-gradient(135deg, #5B86E5 0%, #4169E1 100%);
+            color: #ffffff;
+            padding: 16px 35px;
+            border-radius: 20px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            border: none;
+            box-shadow: 0 8px 20px rgba(91, 134, 229, 0.5);
+            letter-spacing: 0.04em;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        button#gradeButton::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            z-index: -1;
+        }
+        button#gradeButton:hover::before {
+            left: 100%;
+        }
+        button#gradeButton:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 12px 30px rgba(65, 105, 225, 0.7);
+        }
+        button#gradeButton:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(91, 134, 229, 0.4);
+            background: linear-gradient(135deg, #4169E1 0%, #5B86E5 100%);
+        }
+        button#gradeButton svg {
+            width: 25px;
+            height: 25px;
+        }
+
+        .separator {
+            border-top: 1px solid #e0e0e0;
+            margin: 30px 0;
+            opacity: 0.7;
+        }
+
+        .grade-scale-visual-container {
+            border: 1px solid #C4DAFC;
+            border-radius: 12px;
+            padding: 15px 10px;
+            background-color: #E6F0FF;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .grade-scale-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .grade-scale-visual .scale-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4A5568;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 0 5px;
+        }
+        .grade-scale-visual .scale-header .label {
+            font-size: 1.1em;
+            z-index: 1;
+            background-color: #E6F0FF;
+            padding: 0 5px;
+        }
+        .grade-scale-visual .scale-header .arrow-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #5B86E5;
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+        .grade-scale-visual .scale-header .arrow {
+            display: none;
+        }
+
+        .grade-scale-visual .grade-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 5px 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .grade-scale-visual .grade-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .grade-scale-visual span.grade-box {
+            padding: 2px 6px;
+            border-radius: 6px;
+            background-color: #FFFFFF;
+            border: 1px solid #C4DAFC;
+            flex-shrink: 0;
+            font-size: 0.9em;
+            color: #333333;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .grade-scale-visual .arrow {
+            display: none;
+        }
+
+
+        .overall-grade-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .detailed-grades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+            display: none; /* Hidden by default */
+        }
+        .grade-item {
+            background: linear-gradient(135deg, #E6F0FF 0%, #D8E6FF 100%);
+            padding: 15px 10px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #C4DAFC;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .grade-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+            transition: transform 0.3s ease;
+            transform: scale(0);
+            border-radius: 50%;
+        }
+        .grade-item:hover::before {
+            transform: scale(2);
+        }
+        .grade-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
+        }
+        .grade-label {
+            font-size: 0.8rem;
+            color: #4A5568;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+        .grade-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #333333;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .overall-grade-item {
+            min-width: 180px;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #5B86E5 0%, #4169E1 100%);
+            color: #ffffff;
+            box-shadow: 0 7px 20px rgba(91, 134, 229, 0.4);
+        }
+        .overall-grade-item .grade-label {
+            color: #e0e0e0;
+        }
+        .overall-grade-item .grade-value {
+            font-size: 2.5rem;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+        }
+        .show-details-button {
+            background-color: #4A90E2;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            outline: none;
+            border: none;
+            box-shadow: 0 3px 8px rgba(74, 144, 226, 0.4);
+            margin-top: 20px;
+        }
+        .show-details-button:hover {
+            background-color: #357ABD;
+            transform: translateY(-1px);
+        }
+        .model-answer-section {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px; /* Adjusted margin-top for new position */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .model-answer-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 10px;
+        }
+        .model-answer-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #475569;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+
+        .feedback-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 18px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .feedback-section:hover {
+             box-shadow: 0 7px 18px rgba(0, 0, 0, 0.08);
+        }
+        .feedback-section h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #E6F0FF;
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+        .feedback-section h3 svg {
+            margin-right: 8px;
+            color: #5B86E5;
+            width: 20px;
+            height: 20px;
+        }
+        .feedback-section .section-grade {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #5B86E5;
+            margin-left: 8px;
+            background-color: #E6F0FF;
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 1px solid #C4DAFC;
+        }
+        .feedback-section p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #4A5568;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 0.6em;
+        }
+        .feedback-section p strong {
+            margin-left: 0.5em;
+        }
+        .grammar-feedback-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .grammar-feedback-table th, .grammar-feedback-table td {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 0.85rem;
+            vertical-align: top;
+        }
+        .grammar-feedback-table th {
+            background-color: #F0F4F8;
+            color: #4A5568;
+            font-weight: 600;
+            white-space: nowrap;
+            width: 25%;
+        }
+        .grammar-feedback-table td {
+            background-color: #FFFFFF;
+            color: #333333;
+        }
+        .grammar-feedback-table ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .grammar-feedback-table li {
+            position: relative;
+            padding-left: 15px;
+            margin-bottom: 5px;
+        }
+        .grammar-feedback-table li::before {
+            content: '•';
+            color: #5B86E5;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .grammar-feedback-table li:last-child {
+            margin-bottom: 0;
+        }
+
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.02);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        .results-fade-in {
+            animation: fadeInScale 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            font-size: 1rem;
+            color: #5B86E5;
+            font-weight: 600;
+            animation: pulse 1.5s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 10px;
+        }
+        .loading-indicator svg {
+            margin-right: 10px;
+            color: #4169E1;
+            width: 18px;
+            height: 18px;
+        }
+        .error-message {
+            text-align: center;
+            padding: 18px;
+            font-size: 0.95rem;
+            color: #EF4444;
+            font-weight: 500;
+            background-color: #FEF2F2;
+            border: 1px solid #FCA5A5;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            height: auto;
+            max-height: 95vh;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+            animation: fadeInScale 0.4s ease-out forwards;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .modal-content h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 15px;
+        }
+        .modal-content p {
+            font-size: 0.85rem;
+            color: #4A5568;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .terms-box {
+            background-color: #f7f7f7;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            text-align: left;
+            font-size: 0.8rem;
+            color: #666666;
+            line-height: 1.4;
+            margin-bottom: 18px;
+        }
+        .modal-button {
+            background: linear-gradient(135deg, #5B86E5 0%, #4169E1 100%);
+            color: #ffffff;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            border: none;
+            box-shadow: 0 5px 15px rgba(91, 134, 229, 0.4);
+            margin-top: auto;
+        }
+        .modal-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(65, 105, 225, 0.5);
+        }
+        .modal-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(91, 134, 229, 0.3);
+        }
+        
+        footer.footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            padding-bottom: 10px;
+        }
+        footer.footer p {
+            margin-bottom: 5px;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+            .container {
+                padding: 12px;
+                margin-top: 8px;
+            }
+            .header-section {
+                margin-bottom: 20px;
+            }
+            .main-title {
+                font-size: 1.8rem;
+            }
+            .sub-title {
+                font-size: 1rem;
+            }
+            .info-button {
+                width: 30px;
+                height: 30px;
+            }
+            .info-button svg {
+                    width: 16px;
+                    height: 16px;
+                }
+                p {
+                    font-size: 0.85rem;
+                    margin-bottom: 15px;
+                }
+                .japanese-sentence-section {
+                    padding: 12px;
+                }
+                .japanese-sentence-display {
+                    font-size: 1rem;
+                }
+                .japanese-sentence-note {
+                    font-size: 0.75rem;
+                }
+                .generate-japanese-button {
+                    padding: 8px 15px;
+                    font-size: 0.8rem;
+                }
+                .difficulty-selector-container {
+                    /* Adjusted for mobile: flex item, not absolute */
+                    position: static;
+                    margin-left: 0;
+                    text-align: center;
+                    margin-bottom: 10px;
+                    width: 100%; /* Take full width below header */
+                }
+                .japanese-sentence-header-row {
+                    flex-direction: column; /* Stack header and selector vertically */
+                    align-items: center;
+                }
+                .japanese-sentence-header {
+                    text-align: center; /* Center text on mobile */
+                    padding-right: 0; /* Remove right padding */
+                    margin-bottom: 10px; /* Add space below header text */
+                }
+                .difficulty-selector {
+                    font-size: 0.85rem;
+                    padding: 6px 10px;
+                    width: 80%; /* Limit width of dropdown on mobile */
+                    max-width: 200px;
+                }
+                textarea {
+                    height: 150px;
+                    font-size: 0.85rem;
+                    padding: 10px;
+                }
+                .button-group {
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 20px;
+                }
+                button#gradeButton {
+                    font-size: 1.2rem;
+                    padding: 12px 25px;
+                    gap: 8px;
+                    width: 100%;
+                    max-width: 280px;
+                }
+                button#gradeButton svg {
+                    width: 20px;
+                    height: 20px;
+                }
+                .separator {
+                    margin: 20px 0;
+                }
+                .grade-scale-visual-container {
+                    padding: 10px 5px;
+                    margin-bottom: 20px;
+                    max-width: 100%;
+                }
+                .grade-scale-visual {
+                    font-size: 0.85rem;
+                }
+                .grade-scale-visual .scale-header {
+                    max-width: 100%;
+                    font-size: 0.9em;
+                }
+                .grade-scale-visual .grade-row {
+                    max-width: 100%;
+                    justify-content: space-between;
+                    padding: 5px 0;
+                }
+                .grade-scale-visual span.grade-box {
+                    padding: 1px 4px;
+                    font-size: 0.85em;
+                    margin: 0;
+                }
+                .overall-grade-item {
+                    min-width: unset;
+                    width: 80%;
+                    max-width: 220px;
+                    padding: 15px 12px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                .overall-grade-item .grade-value {
+                    font-size: 2.2rem;
+                }
+                .detailed-grades-grid {
+                    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                    gap: 8px;
+                    margin-bottom: 20px;
+                }
+                .grade-item {
+                    padding: 8px 5px;
+                }
+                .grade-label {
+                    font-size: 0.7rem;
+                }
+                .grade-value {
+                    font-size: 1.3rem;
+                }
+                .feedback-section {
+                    padding: 15px;
+                    margin-bottom: 15px;
+                }
+                .feedback-section h3 {
+                    font-size: 1rem;
+                }
+                .feedback-section h3 svg {
+                    width: 18px;
+                    height: 18px;
+                }
+                .feedback-section .section-grade {
+                    font-size: 0.8rem;
+                    padding: 1px 6px;
+                }
+                .feedback-section p {
+                    font-size: 0.8rem;
+                }
+                .grammar-feedback-table th, .grammar-feedback-table td {
+                    padding: 6px 8px;
+                    font-size: 0.75rem;
+                }
+                .grammar-feedback-table th {
+                    width: 30%;
+                }
+                .modal-content {
+                    padding: 15px;
+                    width: 95%;
+                    max-height: 95vh;
+                }
+                .modal-content h2 {
+                    font-size: 1.2rem;
+                }
+                .modal-content p {
+                    font-size: 0.75rem;
+                }
+                .terms-box {
+                    max-height: 250px;
+                    font-size: 0.75rem;
+                }
+                .modal-button {
+                    font-size: 0.9rem;
+                    padding: 10px 18px;
+                }
+                footer.footer {
+                    padding-top: 15px;
+                }
+            }
+            @media (max-width: 480px) {
+                .detailed-grades-grid {
+                    grid-template-columns: 1fr;
+                }
+                .overall-grade-item {
+                    width: 90%;
+                }
+                .japanese-sentence-note {
+                    font-size: 0.7rem;
+                }
+                .terms-box {
+                    max-height: 300px;
+                }
+            }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container">
+        <div class="header-section">
+            <div>
+                <h1 class="main-title">Eigo Craft</h1>
+                <p class="sub-title">AI英訳トレーニング</p>
+            </div>
+            <button id="headerInfoButton" class="info-button">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+        </div>
+
+        <p class="text-gray-600 text-center mb-8">
+            AIが提示する日本語を英訳して添削しましょう。
+            英訳力、表現力向上にお役立てください。
+        </p>
+
+        <div class="japanese-sentence-section">
+            <div class="japanese-sentence-header-row">
+                <p class="japanese-sentence-header">以下の日本語の文を英訳してください</p>
+                <div class="difficulty-selector-container">
+                    <label for="difficultySelector" class="sr-only">難易度選択</label>
+                    <select id="difficultySelector" class="difficulty-selector">
+                        <option value="基礎">基礎</option>
+                        <option value="初級">初級</option>
+                        <option value="中級" selected>中級</option>
+                        <option value="上級">上級</option>
+                        <option value="大学入試">大学入試</option>
+                        <option value="プロフェッショナル">プロフェッショナル</option>
+                    </select>
+                </div>
+            </div>
+            <p id="japaneseSentence" class="japanese-sentence-display">新しい日本語の文章を生成してください。</p>
+            <p id="japaneseSentenceNote" class="japanese-sentence-note hidden"></p>
+            <button id="generateJapaneseButton" class="generate-japanese-button">お題を変更</button>
+        </div>
+
+        <p class="text-gray-600 text-center mb-3">あなたの英訳</p>
+        <textarea id="essayInput" placeholder="ここに英訳した英文を入力してください..." class="mb-6"></textarea>
+
+        <div class="flex justify-center items-center flex-wrap gap-4 mb-8 button-group">
+            <button id="gradeButton">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                AI添削する
+            </button>
+        </div>
+
+        <div class="separator"></div>
+
+        <div id="results" class="hidden">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-5 text-center">添削結果</h2>
+
+            <!-- AI Model Answer -->
+            <div class="model-answer-section hidden">
+                <h3>AIの模範解答:</h3>
+                <p id="modelAnswerText" class="model-answer-text"></p>
+            </div>
+
+            <!-- Grade Scale Visual -->
+            <div class="grade-scale-visual-container">
+                <div class="grade-scale-visual">
+                    <div class="scale-header">
+                        <span class="label">GOOD</span>
+                        <span class="arrow-line"></span>
+                        <span class="label">BAD</span>
+                    </div>
+                    <div class="grade-row">
+                        <span class="grade-box">A+</span>
+                        <span class="grade-box">A</span>
+                        <span class="grade-box">B</span>
+                        <span class="grade-box">C</span>
+                        <span class="grade-box">D</span>
+                        <span class="grade-box">E</span>
+                        <span class="grade-box">F</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Grade Display - Always visible -->
+            <div class="overall-grade-container" id="overallGradeArea">
+                <!-- Overall grade will be inserted here by JavaScript -->
+            </div>
+
+            <!-- Overall Feedback Section - Always visible -->
+            <div id="overallFeedbackSection" class="feedback-section hidden">
+                <!-- Overall feedback will be inserted here by JavaScript -->
+            </div>
+
+            <!-- Detailed Content Wrapper - Hidden by default, toggled by "詳細を見る" -->
+            <div id="detailedContentWrapper" class="hidden">
+                <!-- Detailed Grades Display -->
+                <div class="detailed-grades-grid" id="detailedGradeArea">
+                    <!-- Detailed grades will be inserted here by JavaScript -->
+                </div>
+
+                <!-- Remaining Detailed Feedback Sections (Grammar, Vocab, etc.) -->
+                <div id="remainingFeedbackArea">
+                    <!-- Grammar, Vocab, etc. feedback will be inserted here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- "詳細を見る" button (moved to bottom) -->
+            <div class="flex justify-center mt-4 mb-8">
+                <button id="showDetailsButton" class="show-details-button">詳細を見る</button>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden loading-indicator">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            添削中...少々お待ちください。
+        </div>
+        <div id="error" class="hidden error-message">
+            エラーが発生しました。もう一度お試しください。
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>AIは不正確な情報を表示することがあるため、生成された回答を再確認するようにしてください。</p>
+        <p>&copy;2020-2025 teamENO</p>
+    </footer>
+
+    <!-- Disclaimer Modal -->
+    <div id="disclaimerModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2>ご利用にあたっての注意事項</h2>
+            <p>このサービスはAI（人工知能）を利用して英文添削を行っています。</p>
+            <p>Google社のGemini APIを利用しています。</p>
+            <p>AIによる添削結果には、誤った情報が含まれる可能性があり、その正確性を保証するものではありません。</p>
+            <p>当サービスのご利用により生じた、いかなる損害についても、当方は一切の責任を負いません。</p>
+            <p>添削結果はあくまで参考としてご利用ください。</p>
+
+            <div class="terms-box">
+                <h3>利用規約</h3>
+                <p>
+                    <strong>第1条（本サービスの目的）</strong><br>
+                    本サービス「Eigo Craft」は、ユーザーが入力した英文に対してAIによる添削とフィードバックを提供することを目的とします。本サービスは学習補助ツールであり、専門家による添削を代替するものではありません。
+                </p>
+                <p>
+                    <strong>第2条（免責事項）</strong><br>
+                    1. 本サービスが提供するAI添削結果は、入力された英文に基づきAIが生成したものであり、その内容の正確性、完全性、信頼性、有用性、特定の目的への適合性について、いかなる保証も行いません。<br>
+                    2. AIの特性上、添削結果に誤り、不適切な表現、またはユーザーの意図と異なる内容が含まれる可能性があります。ユーザーはこれを理解し、自身の判断と責任において本サービスを利用するものとします。<br>
+                    3. 本サービスのご利用により生じた、いかなる損害についても、当方は一切の責任を負いません。ユーザーは、本サービスを利用したことにより第三者との間で紛争が生じた場合、自己の責任と費用においてこれを解決するものとします。<br>
+                    4. 本サービスは、システムの障害、通信環境の悪化、メンテナンス等により、事前の通知なく一時的に中断または停止されることがあります。これによりユーザーに生じた損害についても、当方は責任を負いません。
+                </p>
+                <p>
+                    <strong>第3条（禁止事項）</strong><br>
+                    ユーザーは、本サービスの利用にあたり、以下の行為を行ってはならないものとします。<br>
+                    1. 法令または公序良俗に違反する行為<br>
+                    2. 他のユーザーまたは第三者の著作権、商標権等の知的財産権、プライバシー権、肖像権その他の権利を侵害する行為、または侵害するおそれのある行為<br>
+                    3. 他のユーザーまたは第三者を誹謗中傷する行為、または名誉・信用を毀損する行為<br>
+                    4. 犯罪行為またはこれを助長する行為<br>
+                    5. 本サービスの運営を妨害する行為<br>
+                    6. その他、当方が不適切と判断する行為
+                </p>
+                <p>
+                    <strong>第4条（個人情報の取扱い）</strong><br>
+                    当方は、本サービスを通じて取得したユーザーの個人情報を、別途定めるプライバシーポリシーに基づき、適切に取り扱います。
+                </p>
+                <p>
+                    <strong>第5条（利用規約の変更）</strong><br>
+                    当方は、ユーザーに事前の通知をすることなく、本規約の全部または一部を変更できるものとします。変更後の規約は、本ウェブサイトに掲載された時点から効力を生じるものとします。
+                </p>
+                <p>
+                    <strong>第6条（準拠法および管轄裁判所）</strong><br>
+                    本規約の解釈にあたっては、日本法を準拠法とします。本サービスに関して紛争が生じた場合には、当方の本店所在地を管轄する裁判所を第一審の専属的合意管轄裁判所とします。
+                </p>
+            </div>
+            <button id="agreeButton" class="modal-button">上記の内容に同意する</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const japaneseSentenceHeader = document.querySelector('.japanese-sentence-header');
+            const japaneseSentenceDisplay = document.getElementById('japaneseSentence');
+            const japaneseSentenceNote = document.getElementById('japaneseSentenceNote');
+            const generateJapaneseButton = document.getElementById('generateJapaneseButton');
+            const difficultySelector = document.getElementById('difficultySelector');
+            const essayInput = document.getElementById('essayInput');
+            const gradeButton = document.getElementById('gradeButton');
+            const headerInfoButton = document.getElementById('headerInfoButton');
+            const resultsDiv = document.getElementById('results');
+            const overallGradeArea = document.getElementById('overallGradeArea');
+            const overallFeedbackSection = document.getElementById('overallFeedbackSection');
+            const detailedGradeArea = document.getElementById('detailedGradeArea');
+            const remainingFeedbackArea = document.getElementById('remainingFeedbackArea');
+            const loadingIndicator = document.getElementById('loading');
+            const errorMessage = document.getElementById('error');
+            const showDetailsButton = document.getElementById('showDetailsButton');
+            const detailedContentWrapper = document.getElementById('detailedContentWrapper');
+
+            const disclaimerModal = document.getElementById('disclaimerModal');
+            const agreeButton = document.getElementById('agreeButton');
+            const AGREED_KEY = 'eiyaku_kun_disclaimer_agreed';
+
+            let currentJapaneseSentence = '';
+            let currentModelAnswer = '';
+            let lastGeneratedSentence = ''; // To prevent duplicate sentences
+
+            // --- Initial Load & Disclaimer ---
+            // Set initial difficulty based on selector
+            let selectedDifficulty = difficultySelector.value;
+            
+            // Regenerate sentence on difficulty change
+            difficultySelector.addEventListener('change', (event) => {
+                selectedDifficulty = event.target.value;
+                generateJapaneseSentence(true); // Pass true to force regeneration
+            });
+
+            // Initial Japanese sentence generation
+            generateJapaneseSentence().then(() => {
+                if (localStorage.getItem(AGREED_KEY) !== 'true') {
+                    disclaimerModal.classList.remove('hidden');
+                }
+            });
+            
+            agreeButton.addEventListener('click', () => {
+                localStorage.setItem(AGREED_KEY, 'true');
+                disclaimerModal.classList.add('hidden');
+            });
+
+            headerInfoButton.addEventListener('click', () => {
+                disclaimerModal.classList.remove('hidden');
+            });
+
+            // --- Helper Functions ---
+            function showMessage(type, message) {
+                if (type === 'error') {
+                    errorMessage.textContent = message;
+                    errorMessage.classList.remove('hidden');
+                } else {
+                    errorMessage.classList.add('hidden');
+                }
+            }
+
+            async function generateJapaneseSentence(forceRegenerate = false, retryCount = 0) {
+                if (retryCount > 5) { // Limit retries to prevent infinite loops
+                    japaneseSentenceDisplay.textContent = '新しい日本語の文章を生成できませんでした。もう一度お試しください。';
+                    japaneseSentenceNote.classList.add('hidden');
+                    showMessage('error', '文章生成に複数回失敗しました。');
+                    generateJapaneseButton.disabled = false;
+                    return;
+                }
+
+                japaneseSentenceDisplay.textContent = '日本語を生成中...';
+                japaneseSentenceNote.classList.add('hidden');
+                generateJapaneseButton.disabled = true;
+                essayInput.value = '';
+                resultsDiv.classList.add('hidden');
+                showDetailsButton.classList.add('hidden');
+                detailedContentWrapper.classList.add('hidden');
+                overallFeedbackSection.classList.add('hidden');
+                document.querySelector('.model-answer-section').classList.add('hidden');
+
+                const difficultyPrompts = {
+                    "基礎": "小学生レベルの簡単な自己紹介、好きな物、家族、簡単な質問、簡単な感情表現、短い会話（例：「私の名前はユキです。10歳です。」「私はリンゴが好きです。」「私は兄弟が一人と姉妹が一人います。」「お名前は何ですか？」「嬉しいです！」「元気ですか？元気です、ありがとうございます！」）の中から、**重複を避け、できるだけ多様な**日本語の文章を一文生成してください。意味の補足情報やその他の説明は一切含めないでください。",
+                    "初級": "中学前半で学ぶ程度の日常会話レベルの日本語の短い文章を一文生成してください。文構造は比較的単純で、基本的な動詞や名詞を使用してください。意味の補足情報やその他の説明は一切含めないでください。",
+                    "中級": "中学後半で学ぶ程度の、少し複雑な内容を含む日本語の文章を一文生成してください。接続詞を用いた複文や、少し抽象的な表現を含めても構いません。意味の補足情報やその他の説明は一切含めないでください。",
+                    "上級": "高校で学ぶ程度の、抽象的なテーマや状況説明、意見表明を含む日本語の文章を一文生成してください。より高度な文法構造や語彙を使用してください。意味の補足情報やその他の説明は一切含めないでください。",
+                    "大学入試": "大学入試レベルの、論理的思考や高度な表現を要する日本語の文章を一文生成してください。複雑な構文や学術的な語彙を使用してください。意味の補足情報やその他の説明は一切含めないでください。",
+                    "プロフェッショナル": "ビジネスや専門分野で使われるような、高度かつ正確な日本語の文章を一文生成してください。専門用語や丁寧な表現を含めても構いません。意味の補足情報やその他の説明は一切含めないでください。"
+                };
+
+                const promptText = difficultyPrompts[selectedDifficulty] || difficultyPrompts["中級"];
+
+                try {
+                    const prompt = `${promptText} JSON形式で日本語の文章と、その模範的な英訳だけを生成してください。JSONは以下のような形式でお願いします。{"japanese_sentence": "日本語の文章", "model_answer": "模範解答の英語"}`;
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { 
+                        contents: chatHistory,
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    "japanese_sentence": { "type": "STRING" },
+                                    "model_answer": { "type": "STRING" }
+                                }
+                            }
+                        }
+                    };
+                    const apiKey = ""; // API key will be provided by the environment
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`APIエラー: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                    }
+
+                    const result = await response.json();
+                    let parsedJson;
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const jsonString = result.candidates[0].content.parts[0].text;
+                        parsedJson = JSON.parse(jsonString);
+
+                        const newJapaneseSentence = parsedJson.japanese_sentence.trim();
+                        
+                        // Check for duplicate sentence, and retry if found
+                        if (!forceRegenerate && newJapaneseSentence === lastGeneratedSentence) {
+                            console.log('Detected duplicate sentence, regenerating...');
+                            await generateJapaneseSentence(false, retryCount + 1);
+                            return;
+                        }
+
+                        currentJapaneseSentence = newJapaneseSentence;
+                        currentModelAnswer = parsedJson.model_answer.trim();
+                        japaneseSentenceDisplay.textContent = currentJapaneseSentence;
+                        japaneseSentenceNote.classList.add('hidden'); // Ensure note is hidden
+                        lastGeneratedSentence = currentJapaneseSentence;
+                        
+                    } else {
+                        throw new Error('APIからの応答が予期しない形式です。');
+                    }
+                } catch (error) {
+                    console.error('日本語生成エラー:', error);
+                    japaneseSentenceDisplay.textContent = '日本語の生成に失敗しました。';
+                    japaneseSentenceNote.classList.add('hidden');
+                    showMessage('error', `日本語生成中にエラーが発生しました: ${error.message}`);
+                } finally {
+                    generateJapaneseButton.disabled = false;
+                }
+            }
+
+            generateJapaneseButton.addEventListener('click', () => generateJapaneseSentence(true));
+
+
+            function createGradeItem(label, value, targetId = null, isOverall = false) {
+                const dataTargetAttr = targetId ? `data-target="${targetId}"` : '';
+                const overallClass = isOverall ? 'overall-grade-item' : '';
+                const dataLabelAttr = `data-label="${label}"`;
+                return `
+                    <div class="grade-item ${overallClass}" ${dataTargetAttr} ${dataLabelAttr}>
+                        <div class="grade-label">${label}</div>
+                        <div class="grade-value">${value}</div>
+                    </div>
+                `;
+            }
+
+            function createFeedbackSection(id, title, grade, good_points, improvements, mistakes, suggestions, grammarMistakeDetails = null) {
+                let content = '';
+
+                const gradeDisplay = grade ? `<span class="section-grade">${grade}</span>` : '';
+
+                if (good_points && good_points.trim() !== '') {
+                    content += `<p>・<strong>良かった点</strong><br>${good_points}</p>`;
+                }
+
+                if (title === '文法' && grammarMistakeDetails && grammarMistakeDetails.length > 0) {
+                    content += `<p>・<strong>間違っている点と改善例</strong></p>`;
+                    content += `<table class="grammar-feedback-table">`;
+                    content += `<thead><tr><th>間違っている点</th><th>改善例</th><th>理由</th></tr></thead>`;
+                    content += `<tbody>`;
+                    grammarMistakeDetails.forEach(detail => {
+                        content += `<tr><td><ul><li>${detail.error}</li></ul></td><td><ul><li>${detail.correction_example}</li></ul></td><td><ul><li>${detail.reason}</li></ul></td></tr>`;
+                    });
+                    content += `</tbody></table>`;
+                    content += `<div style="height: 15px;"></div>`;
+                } else {
+                    const trimmedImprovements = improvements ? improvements.trim() : '';
+                    const trimmedMistakes = mistakes ? mistakes.trim() : '';
+
+                    if (trimmedMistakes !== '') {
+                        content += `<p>・<strong>間違っている点</strong><br>${trimmedMistakes}</p>`;
+                    }
+
+                    if (trimmedImprovements !== '' && trimmedImprovements !== trimmedMistakes) {
+                        content += `<p>・<strong>改善すべき点</strong><br>${trimmedImprovements}</p>`;
+                    }
+                }
+                
+                if (suggestions && suggestions.trim() !== '') {
+                    content += `<p>・<strong>あなたへのアドバイス</strong><br>${suggestions}</p>`;
+                }
+
+                if (content.trim() === '') {
+                    return '';
+                }
+
+                const iconSvg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                `;
+
+                return `
+                    <div id="${id}" class="feedback-section">
+                        <h3>${iconSvg}${title}${gradeDisplay}</h3>
+                        ${content}
+                    </div>
+                `;
+            }
+
+            gradeButton.addEventListener('click', async () => {
+                const userEnglishEssay = essayInput.value.trim();
+                const originalJapanese = japaneseSentenceDisplay.textContent.trim();
+
+                if (!originalJapanese || originalJapanese === '新しい日本語の文章を生成してください。' || originalJapanese === '日本語の生成に失敗しました。') {
+                    showMessage('error', 'まず日本語の文章を生成してください。');
+                    return;
+                }
+                if (!userEnglishEssay) {
+                    showMessage('error', '英訳した文章を入力してください。');
+                    return;
+                }
+
+                resultsDiv.classList.add('hidden');
+                resultsDiv.classList.remove('results-fade-in');
+                errorMessage.classList.add('hidden');
+                loadingIndicator.classList.remove('hidden');
+                overallGradeArea.innerHTML = '';
+                overallFeedbackSection.innerHTML = '';
+                detailedGradeArea.innerHTML = '';
+                remainingFeedbackArea.innerHTML = '';
+                document.querySelector('.model-answer-section').classList.add('hidden');
+                showDetailsButton.classList.add('hidden');
+                detailedContentWrapper.classList.add('hidden');
+
+                try {
+                    let gradingInstructions = "以下の日本語の文章に対するあなたの英訳文を添削し、詳細な評価とフィードバックを提供してください。\n";
+                    gradingInstructions += "原文の日本語の意味を正確に表現できているか、自然な英語であるか、そして文法、語彙、構成、スペルを総合的に評価してください。\n";
+                    gradingInstructions += "評価は以下の項目についてA+, A, B, C, D, E, Fのいずれかで採点し、その後に各評価項目（文法、語彙、構成、内容、スペル・表記、総合）ごとに詳細な講評（良かった点、改善すべき点、間違っている点、あなたへのアドバイス）を日本語でJSON形式で出力してください。\n";
+                    gradingInstructions += "A+ は完璧で、直すところがないような最高の評価です。F は一番低い評価で、0点に近い低い点数になります。\n\n";
+                    gradingInstructions += "評価項目と詳細フィードバックの要件:\n";
+                    gradingInstructions += "- 各項目（文法、語彙、構成、内容、スペル・表記、総合）に対して、それぞれ以下の4つのサブ項目で講評を記載してください。\n";
+                    gradingInstructions += "    - 良かった点（good_points）: その項目で評価できる点\n";
+                    gradingInstructions += "    - 改善すべき点（improvements）: 全体的に見て改善の余地がある点\n";
+                    gradingInstructions += "    - 間違っている点（mistakes）: 明らかな誤りや修正が必要な点\n";
+                    gradingInstructions += "    - あなたへのアドバイス（suggestions）: さらに質を高めるための具体的な提案\n\n";
+
+                    gradingInstructions += "文法のフィードバックでは、'mistake_details' という配列に、個々の間違いについて 'error' (間違っている箇所), 'reason' (間違いの理由), 'correction_example' (改善例) を含めて、箇条書きの表形式で表示できるようにしてください。表の列順は、間違っている点、改善例、理由の順にしてください。\n\n";
+                    
+                    let finalPrompt = `${gradingInstructions}元の日本語:\n${originalJapanese}\n\nあなたの英訳文:\n${userEnglishEssay}\n`;
+
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: finalPrompt }] });
+                    const payload = {
+                        contents: chatHistory,
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    "overall_grade": { "type": "STRING", "enum": ["A+", "A", "B", "C", "D", "E", "F"] },
+                                    "grammar_grade": { "type": "STRING", "enum": ["A+", "A", "B", "C", "D", "E", "F"] },
+                                    "vocabulary_grade": { "type": "STRING", "enum": ["A+", "A", "B", "C", "D", "E", "F"] },
+                                    "structure_grade": { "type": "STRING", "enum": ["A+", "A", "B", "C", "D", "E", "F"] },
+                                    "content_grade": { "type": "STRING", "enum": ["A+", "A", "B", "C", "D", "E", "F"] },
+                                    "spelling_grade": { "type": "STRING", "enum": ["A+", "A", "B", "C", "D", "E", "F"] },
+                                    "detailed_feedback": {
+                                        "type": "OBJECT",
+                                        "properties": {
+                                            "overall": {
+                                                "type": "OBJECT",
+                                                "properties": {
+                                                    "good_points": { "type": "STRING" },
+                                                    "improvements": { "type": "STRING" },
+                                                    "mistakes": { "type": "STRING" },
+                                                    "suggestions": { "type": "STRING" }
+                                                },
+                                                "propertyOrdering": ["good_points", "improvements", "mistakes", "suggestions"]
+                                            },
+                                            "grammar": {
+                                                "type": "OBJECT",
+                                                "properties": {
+                                                    "good_points": { "type": "STRING" },
+                                                    "mistake_details": {
+                                                        "type": "ARRAY",
+                                                        "items": {
+                                                            "type": "OBJECT",
+                                                            "properties": {
+                                                                "error": { "type": "STRING" },
+                                                                "reason": { "type": "STRING" },
+                                                                "correction_example": { "type": "STRING" }
+                                                            },
+                                                            "propertyOrdering": ["error", "correction_example", "reason"]
+                                                        }
+                                                    },
+                                                    "improvements": { "type": "STRING" },
+                                                    "mistakes": { "type": "STRING" },
+                                                    "suggestions": { "type": "STRING" }
+                                                },
+                                                "propertyOrdering": ["good_points", "mistake_details", "improvements", "mistakes", "suggestions"]
+                                            },
+                                            "vocabulary": {
+                                                "type": "OBJECT",
+                                                "properties": {
+                                                    "good_points": { "type": "STRING" },
+                                                    "improvements": { "type": "STRING" },
+                                                    "mistakes": { "type": "STRING" },
+                                                    "suggestions": { "type": "STRING" }
+                                                },
+                                                "propertyOrdering": ["good_points", "improvements", "mistakes", "suggestions"]
+                                            },
+                                            "structure": {
+                                                "type": "OBJECT",
+                                                "properties": {
+                                                    "good_points": { "type": "STRING" },
+                                                    "improvements": { "type": "STRING" },
+                                                    "mistakes": { "type": "STRING" },
+                                                    "suggestions": { "type": "STRING" }
+                                                },
+                                                "propertyOrdering": ["good_points", "improvements", "mistakes", "suggestions"]
+                                            },
+                                            "content": {
+                                                "type": "OBJECT",
+                                                "properties": {
+                                                    "good_points": { "type": "STRING" },
+                                                    "improvements": { "type": "STRING" },
+                                                    "mistakes": { "type": "STRING" },
+                                                    "suggestions": { "type": "STRING" }
+                                                },
+                                                "propertyOrdering": ["good_points", "improvements", "mistakes", "suggestions"]
+                                            },
+                                            "spelling": {
+                                                "type": "OBJECT",
+                                                "properties": {
+                                                    "good_points": { "type": "STRING" },
+                                                    "improvements": { "type": "STRING" },
+                                                    "mistakes": { "type": "STRING" },
+                                                    "suggestions": { "type": "STRING" }
+                                                },
+                                                "propertyOrdering": ["good_points", "improvements", "mistakes", "suggestions"]
+                                            }
+                                        },
+                                        "propertyOrdering": ["overall", "grammar", "vocabulary", "structure", "content", "spelling"]
+                                    }
+                                },
+                                "propertyOrdering": ["overall_grade", "grammar_grade", "vocabulary_grade", "structure_grade", "content_grade", "spelling_grade", "detailed_feedback"]
+                            }
+                        }
+                    };
+
+                    const apiKey = "AIzaSyA_c7CFmw0VJo1itcTmLJPapMYmnzzVYVU"; // API key will be provided by the environment
+
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`APIエラー: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+                    }
+
+                    const result = await response.json();
+                    let parsedJson;
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const jsonString = result.candidates[0].content.parts[0].text;
+                        parsedJson = JSON.parse(jsonString);
+                    } else {
+                        throw new Error('APIからの応答が予期しない形式です。');
+                    }
+
+                    document.getElementById('modelAnswerText').textContent = currentModelAnswer;
+                    document.querySelector('.model-answer-section').classList.remove('hidden');
+
+                    overallGradeArea.innerHTML = createGradeItem('総合', parsedJson.overall_grade, 'feedback-overall', true);
+
+                    const feedback = parsedJson.detailed_feedback;
+                    overallFeedbackSection.innerHTML = createFeedbackSection('feedback-overall', '総合', parsedJson.overall_grade, feedback.overall.good_points, feedback.overall.improvements, feedback.overall.mistakes, feedback.overall.suggestions);
+                    overallFeedbackSection.classList.remove('hidden');
+
+                    detailedContentWrapper.classList.add('hidden'); 
+                    showDetailsButton.classList.remove('hidden');
+                    showDetailsButton.textContent = '詳細を見る';
+
+                    let detailedGradesHtml = '';
+                    let remainingFeedbackHtml = '';
+
+                    const gradingItemOrder = ['grammar', 'vocabulary', 'structure', 'content', 'spelling'];
+                    const gradeMap = {
+                        grammar: parsedJson.grammar_grade,
+                        vocabulary: parsedJson.vocabulary_grade,
+                        structure: parsedJson.structure_grade,
+                        content: parsedJson.content_grade,
+                        spelling: parsedJson.spelling_grade,
+                        overall: parsedJson.overall_grade
+                    };
+
+                    gradingItemOrder.forEach(item => {
+                        const labelMap = {
+                            grammar: '文法',
+                            vocabulary: '語彙',
+                            structure: '構成',
+                            content: '内容',
+                            spelling: 'スペル・表記'
+                        };
+                        const grammarMistakeDetails = (item === 'grammar' && feedback.grammar && Array.isArray(feedback.grammar.mistake_details)) ? feedback.grammar.mistake_details : null;
+                        
+                        detailedGradesHtml += createGradeItem(labelMap[item], gradeMap[item], `feedback-${item}`);
+
+                        remainingFeedbackHtml += createFeedbackSection(
+                            `feedback-${item}`,
+                            labelMap[item],
+                            gradeMap[item],
+                            feedback[item].good_points,
+                            feedback[item].improvements,
+                            feedback[item].mistakes,
+                            feedback[item].suggestions,
+                            grammarMistakeDetails
+                        );
+                    });
+
+                    detailedGradeArea.innerHTML = detailedGradesHtml;
+                    remainingFeedbackArea.innerHTML = remainingFeedbackHtml;
+
+                    resultsDiv.classList.remove('hidden');
+                    resultsDiv.classList.add('results-fade-in');
+
+                } catch (error) {
+                    console.error('添削エラー:', error);
+                    showMessage('error', `添削中にエラーが発生しました: ${error.message}`);
+                    resultsDiv.classList.add('hidden');
+                    overallFeedbackSection.classList.add('hidden');
+                    document.querySelector('.model-answer-section').classList.add('hidden');
+                    showDetailsButton.classList.add('hidden');
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            });
+
+            // --- Show Details Button Logic ---
+            showDetailsButton.addEventListener('click', () => {
+                if (detailedContentWrapper.classList.contains('hidden')) {
+                    detailedContentWrapper.classList.remove('hidden');
+                    showDetailsButton.textContent = '詳細を隠す';
+                } else {
+                    detailedContentWrapper.classList.add('hidden');
+                    showDetailsButton.textContent = '詳細を見る';
+                }
+
+                // Add click listeners to newly visible grade items for scrolling
+                document.querySelectorAll('#detailedGradeArea .grade-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const targetId = item.dataset.target;
+                        if (targetId) {
+                            const targetElement = document.getElementById(targetId);
+                            if (targetElement) {
+                                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
